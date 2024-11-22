@@ -1,0 +1,42 @@
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: rgb(72, 27, 100); 
+    color: white;
+    --width: 101.3%;
+    
+}
+
+#logoimg {
+    height: 50px; /* Ajuste conforme necessário */
+}
+
+.logo {
+    font-size: 2em; /* Aumenta o tamanho da fonte */
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center; /* Alinha verticalmente */
+}
+
+.nav-item {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px; /* Aumenta o espaçamento horizontal */
+    font-size: 1.2em; /* Aumenta o tamanho da fonte */
+    transition: color 0.3s;
+}
+
+.nav-item:hover {
+    color: #000; /* Amarelo gema para o hover */
+}
+
+.separator {
+    color: #000;
+}
