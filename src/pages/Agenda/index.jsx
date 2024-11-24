@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 //import ScheduleForm from "./ScheduleForm";
 //import ScheduleList from "./ScheduleList";
@@ -93,7 +93,7 @@ const DataManagement = () => {
   // Exibe os dados e o agendador
   return (
     <div className="app-container">
-      {/* Seção do formulário de cadastro */}
+      {/* Seção do formulário de cadastro }/*
       <div className="cadastro-container">
         <h1>{isEditing ? "Atualizar Categoria" : "Cadastrar Nova Categoria"}</h1>
 
@@ -119,14 +119,14 @@ const DataManagement = () => {
             required
           />
 
-          <button type="submit">{isEditing ? "Atualizar" : "Cadastrar"}</button> {/* Botão para cadastrar ou atualizar */}
-        </form>
+          <button type="submit">{isEditing ? "Atualizar" : "Cadastrar"}</button> {/* Botão para cadastrar ou atualizar }
+ /*       </form>
       </div>
 
-      {/* Separador visual */}
+      {/* Separador visual }/*
       <hr style={{ margin: "40px 0", border: "1px solid #ddd" }} />
 
-      {/* Seção da lista de categorias */}
+      {/* Seção da lista de categorias }/*
       <div className="consulta-container">
         <h2>Lista de Categorias</h2>
         <ul>
@@ -134,12 +134,12 @@ const DataManagement = () => {
             <li key={item.id} style={{ marginBottom: "10px" }}>
               {item.id} - {item.nome} - {item.descricao}
               
-              {/* Botão de editar */}
+              {/* Botão de editar }
               <button onClick={() => handleEdit(item)} style={{ marginLeft: "10px" }}>
                 Editar
               </button>
 
-              {/* Botão de deletar */}
+              {/* Botão de deletar }
               <button onClick={() => handleDelete(item.id)} style={{ marginLeft: "10px", color: "red" }}>
                 Deletar
               </button>
@@ -148,20 +148,20 @@ const DataManagement = () => {
         </ul>
       </div>
 
-      {/* Seção do agendador */}
+      {/* Seção do agendador }
       {/*<div>
         <br />
         <h1>Agendador de Aulas</h1>
         <ScheduleForm addAppointment={addAppointment} />
         <ScheduleList appointments={appointments} />
       </div>
-      */}
+      }
     </div>
     
   );
 };
 
-export default DataManagement;
+export default DataManagement;/*
 
 /*
 
@@ -317,3 +317,213 @@ function Login() {
 export default Login;
 */}
 
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
+import './agenda.css';
+
+const Agenda = () => {
+    const [nome, setNome] = useState('');
+    const [data, setData] = useState('');
+    const [horario, setHorario] = useState('');
+    const [categorias, setCategorias] = useState([]);
+    const [professores, setProfessores] = useState([]);
+    const [categoriaId, setCategoriaId] = useState('');
+    const [professorId, setProfessorId] = useState('');
+    const [aulasAgendadas, setAulasAgendadas] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await api.get('/api/categorias', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setCategorias(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar categorias:", error);
+            }
+        };
+
+        const fetchProfessores = async () => {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await api.get('/api/professores', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setProfessores(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar professores:", error);
+            }
+        };
+
+        const fetchAulasAgendadas = async () => {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await api.get('/api/aulas', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setAulasAgendadas(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar aulas agendadas:", error);
+            }
+        };
+
+        fetchCategorias();
+        fetchProfessores();
+        fetchAulasAgendadas();
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        // Validação
+        if (!nome || !data || !horario || !categoriaId || !professorId) {
+            setErrorMessage('Por favor, preencha todos os campos!');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+
+        try {
+            await api.post('/api/aulas/agendar', {
+                nome,
+                data,
+                horario,
+                categoria: { id: categoriaId },
+                professor: { id: professorId }
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setSuccessMessage('Aula agendada com sucesso!');
+            // Limpar os campos após o agendamento
+            setNome('');
+            setData('');
+            setHorario('');
+            setCategoriaId('');
+            setProfessorId('');
+            // Recarregar aulas agendadas
+            const response = await api.get('/api/aulas', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setAulasAgendadas(response.data);
+        } catch (error) {
+            console.error("Erro ao agendar aula:", error);
+            setErrorMessage('Erro ao agendar aula: ' + (error.response?.data.message || 'Erro desconhecido'));
+        }
+    };
+
+    const handleDelete = async (id) => {
+        const token = localStorage.getItem('token');
+        if (window.confirm("Tem certeza que deseja excluir esta aula?")) {
+            try {
+                await api.delete(`/api/aulas/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setSuccessMessage('Aula excluída com sucesso!');
+                // Recarregar aulas agendadas
+                const response = await api.get('/api/aulas', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setAulasAgendadas(response.data);
+            } catch (error) {
+                console.error("Erro ao excluir aula:", error);
+                setErrorMessage('Erro ao excluir aula: ' + (error.response?.data.message || 'Erro desconhecido'));
+            }
+        }
+    };
+
+    return (
+        <div className="agendar-aula">
+            <h2>Agendar Aula</h2>
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
+            {successMessage && <div className="success-message">{successMessage}</div>}
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Nome da Aula:</label>
+                    <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
+                </div>
+                <div>
+                    <label>Data:</label>
+                    <input type="date" value={data} onChange={(e) => setData(e.target.value)} required />
+                </div>
+                <div>
+                    <label>Horário:</label>
+                    <input type="time" value={horario} onChange={(e) => setHorario(e.target.value)} required />
+                </div>
+                <div>
+                    <label>Categoria:</label>
+                    <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)} required>
+                      <option value="">Selecione uma categoria</option>
+                      {Array.isArray(categorias) && categorias.map(categoria => (
+                        <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
+                         ))}
+                    </select>
+                </div>
+                <div>
+                    <label>Professor:</label>
+                    <select value={professorId} onChange={(e) => setProfessorId(e.target.value)} required>
+                        <option value="">Selecione um professor</option>
+                        {professores.map(professor => (
+                            <option key={professor.id} value={professor.id}>{professor.nome}</option>
+                        ))}
+                    </select>
+                </div>
+                <button type="submit">Agendar Aula</button>
+            </form>
+
+            <h3>Aulas Agendadas</h3>
+            <div className="aulas-agendadas">
+                {aulasAgendadas.length === 0 ? (
+                    <p>Nenhuma aula agendada.</p>
+                ) : (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Data</th>
+                                <th>Horário</th>
+                                <th>Categoria</th>
+                                <th>Professor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {aulasAgendadas.map(aula => (
+                                <tr key={aula.id}>
+                                    <td>{aula.nome}</td>
+                                    <td>{new Date(aula.data).toLocaleDateString()}</td>
+                                    <td>{aula.horario}</td>
+                                    <td>{aula.categoria.nome}</td>
+                                    <td>{aula.professor.nome}</td>
+                                    <td>
+                                        <button onClick={() => handleDelete(aula.id)}>Excluir</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default Agenda;
