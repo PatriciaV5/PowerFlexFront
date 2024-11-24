@@ -383,9 +383,8 @@ export default DataManagement;
 */
 
 // npm install react-hook-form
-import  {useForm} from "react-hook-form";
+/*import  {useForm} from "react-hook-form";
 import './aluno.css';
-//import { useState } from "react";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -393,10 +392,7 @@ import api from "../../services/api";
 const Aluno = () => {
   const navigate = useNavigate();
   const [vnome, setNome] = useState('');
-  const [vnascimento, setNascimento] = useState('');
   const [vcpf, setCPF] = useState('');
-  const [vtelefone, setTelefone] = useState('');
-  const [vgenero, setGenero] = useState('');
   const [vemail, setEmail] = useState('');
   const [vsenha, setSenha] = useState('');
  
@@ -406,12 +402,23 @@ const Aluno = () => {
     if (!token) {
       navigate('/');
     }
+
+    const fetchPlanos = async () => {
+      try {
+        const response = await api.get("/api/planos");
+        setPlanos(response.data); // Armazena os planos no estado
+      } catch (error) {
+        console.error("Erro ao buscar planos:", error);
+      }
+    };
+
+    fetchPlanos();
   }, [navigate]);
   const onSubmit = async () => {
     const token = localStorage.getItem('token'); // Adicione esta linha
     try {
-      {/*if (!vnome || !vnascimento || !vcpf || !vtelefone || !vgenero || !vemail || !vsenha) {*/}
-      if (!vnome || !vcpf || !vemail || !vsenha) {
+     // {if (!vnome || !vnascimento || !vcpf || !vtelefone || !vgenero || !vemail || !vsenha) {}
+      if (!vnome || !vcpf || !vemail || !vsenha ) {
         alert("Por favor, preencha todos os campos!");
         return;
       } 
@@ -420,13 +427,13 @@ const Aluno = () => {
 
 
       // Verifica se os campos CPF, telefone e data de nascimento estão completos
-      {/*if (vcpf.length !== 11 || vtelefone.length !== 11 || vnascimento.length !== 10) {
+      {//if (vcpf.length !== 11 || vtelefone.length !== 11 || vnascimento.length !== 10) {
         
-        alert("Por favor, preencha os campos CPF, telefone e data de nascimento corretamente.");
-        return;
-      }
-    */}
-    const response = await api.post("/api/alunos/registrar", { nome: vnome, cpf: vcpf, email: vemail, senha: vsenha }, {
+        //alert("Por favor, preencha os campos CPF, telefone e data de nascimento corretamente.");
+        //return;
+     // }
+    //}
+    const response = await api.post("/api/alunos/registrar", { nome: vnome, cpf: vcpf, email: vemail, senha: vsenha, plano: { id: vplano }}, {
       headers: {
         Authorization: `Bearer ${token}` // Adiciona o token ao cabeçalho
       }
@@ -471,53 +478,18 @@ console.log(response.data);
   }
 };*/
 
-  const handleChangeCPF = (e) => {
+  /*const handleChangeCPF = (e) => {
     const onlyNums = e.target.value.replace(/\D/g, '');
     const maxChars = onlyNums.slice(0, 11);
     setCPF(maxChars);
   };
 
-  const handleChangeTelefone = (e) => { 
-    const onlyNums = e.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
-    let formattedNumber = onlyNums.slice(0, 11); // Limita a 12 caracteres
-    
-    // Adiciona parênteses aos dois primeiros números
-    if (formattedNumber.length > 2) {
-      formattedNumber = `(${formattedNumber.slice(0, 2)})${formattedNumber.slice(2)}`;
-    }
-    
-    // Adiciona um traço após os cinco primeiros números
-    if (formattedNumber.length > 7) {
-      formattedNumber = `${formattedNumber.slice(0, 9)}-${formattedNumber.slice(9)}`;
-    }
-  
-    setTelefone(formattedNumber);
-  };
 
   const handleChangeNome = (e) => {
     const onlyLetters = e.target.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
     setNome(onlyLetters);
   };
-
-  const handleChangeDataNascimento = (e) => {
-    const onlyNums = e.target.value.replace(/\D/g, '');
-    let formattedDate = onlyNums.slice(0, 8);
-
-    if (formattedDate.length > 2 && formattedDate.length < 5) {
-      formattedDate = `${formattedDate.slice(0, 2)}/${formattedDate.slice(2)}`;
-    } else if (formattedDate.length >= 5) {
-      formattedDate = `${formattedDate.slice(0, 2)}/${formattedDate.slice(2, 4)}/${formattedDate.slice(4)}`;
-    }
-
-    setNascimento(formattedDate);
-  };
-
-  const handleSelectGenero = (e) => {
-    setGenero(e.target.value);
-  };
   
-
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="aapp-container">
       <div className="form-group">
@@ -541,6 +513,7 @@ console.log(response.data);
           <input type="password" placeholder="Informe a sua Senha" value={vsenha} onChange={(e) => setSenha(e.target.value)} maxLength="20" />
         </div>
       </div>
+
       <div className="form-group">
         <button type="submit">Criar o seu Cadastro</button>
       </div>
@@ -549,7 +522,7 @@ console.log(response.data);
   );
 
 };
-export default Aluno; 
+export default Aluno; */
 
    
    
@@ -627,3 +600,256 @@ export default Usuario;
       </div>
 */
 
+import { useForm } from "react-hook-form";
+import './aluno2.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
+
+const Aluno = () => {
+  const navigate = useNavigate();
+  const [alunos, setAlunos] = useState([]);
+  const [selectedAluno, setSelectedAluno] = useState(null);
+  const [vnome, setNome] = useState('');
+  const [vcpf, setCPF] = useState('');
+  const [vemail, setEmail] = useState('');
+  const [vsenha, setSenha] = useState('');
+  const [vplano, setPlano] = useState('');
+  const [planos, setPlanos] = useState([]); 
+
+
+  const { handleSubmit } = useForm();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+    }
+
+    const fetchAlunos = async () => {
+      const token = localStorage.getItem('token');
+      console.log("Token enviado na requisição:", token); // Log do token enviado
+      try {
+        const response = await api.get("/api/alunos", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setAlunos(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar alunos:", error);
+      }
+    };
+    const fetchPlanos = async () => { 
+      const token = localStorage.getItem('token');
+      try {
+        const response = await api.get("/api/planos", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setPlanos(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar planos:", error);
+      }
+    };
+
+
+    fetchAlunos();
+    fetchPlanos(); 
+
+  }, [navigate]);
+
+  const validateForm = () => {
+    if (!vnome || !vcpf || !vemail || !vsenha || !vplano) {
+      alert("Por favor, preencha todos os campos!");
+      return false;
+    }
+    if (vcpf.length !== 11) {
+      alert("O CPF deve ter exatamente 11 dígitos.");
+      return false;
+    }
+    if (!vemail.includes('@')) {
+      alert("O e-mail deve conter o caractere '@'.");
+      return false;
+    }
+    return true;
+  };
+
+  const onSubmit = async () => {
+    const token = localStorage.getItem('token');
+    if (!validateForm()) return;
+
+    try {
+      if (selectedAluno) {
+        // Atualizar aluno existente
+        await api.put(`/api/alunos/atualizar/${selectedAluno.id}`, {
+          nome: vnome,
+          cpf: vcpf,
+          email: vemail,
+          senha: vsenha,
+          plano: { id: vplano }
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        alert('Aluno atualizado com sucesso!');
+      } else {
+        // Cadastrar novo aluno
+        await api.post("/api/alunos/registrar", {
+          nome: vnome,
+          cpf: vcpf,
+          email: vemail,
+          senha: vsenha,
+          plano: { id: vplano }
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        alert('Cadastro realizado com sucesso!');
+      }
+
+      // Limpar o formulário e recarregar a lista
+      setSelectedAluno(null);
+      setNome('');
+      setCPF('');
+      setEmail('');
+      setSenha('');
+      setPlano('');
+      fetchAlunos(); // Recarrega a lista de alunos
+    } catch (error) {
+      console.log()
+      alert('Erro ao cadastrar/atualizar: ' + (error.response?.data.message || 'Erro desconhecido'));
+    }
+  };
+
+  const handleSelectAluno = (aluno) => {
+    setSelectedAluno(aluno);
+    setNome(aluno.nome);
+    setCPF(aluno.cpf);
+    setEmail(aluno.email);
+    setSenha(aluno.senha);
+    setPlano(aluno.plano ? aluno.plano.id : '');
+  };
+
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem('token');
+    try {
+      await api.delete(`/api/alunos/excluir/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      alert('Aluno excluído com sucesso!');
+    } catch (error) {
+      alert('Erro ao excluir aluno: ' + (error.response?.data.message || 'Erro desconhecido'));
+    }
+  };
+
+  return (
+    <div className="app-container">
+      <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+        <div className="form-group">
+          <label>Nome Completo</label>
+          <input type="text"
+          placeholder="Informe o Nome Completo" 
+          value={vnome} 
+          onChange={(e) => setNome(e.target.value)} 
+        />
+        </div>
+
+        <div className="form-group">
+          <label>CPF</label>
+          <input 
+            type="text" 
+            placeholder="Informe o CPF (11 dígitos)" 
+            value={vcpf} 
+            onChange={(e) => setCPF(e.target.value)} 
+          />
+        </div>
+
+        <div className="form-group">
+          <label>E-mail</label>
+          <input 
+            type="email" 
+            placeholder="Informe o E-mail" 
+            value={vemail} 
+            onChange={(e) => setEmail(e.target.value)} 
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Senha</label>
+          <input 
+            type="password" 
+            placeholder="Informe a sua Senha" 
+            value={vsenha} 
+            onChange={(e) => setSenha(e.target.value)} 
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="plano">Plano</label>
+          <select value={vplano} onChange={(e) => setPlano(e.target.value)}>
+            <option value="">Selecione um plano</option>
+            {planos.length > 0 ? (
+              planos.map(plano => (
+                <option key={plano.id} value={plano.id}>{plano.nome}</option>
+              ))
+            ) : (
+              <option value="" disabled>Carregando planos...</option>
+            )}
+          </select>
+        </div>
+
+
+        <div className="form-group">
+          <button type="submit">{selectedAluno ? "Atualizar Aluno" : "Cadastrar Aluno"}</button>
+          {selectedAluno && (
+            <button 
+              type="button" 
+              onClick={() => handleDelete(selectedAluno.id)} 
+              className="delete-button"
+            >
+              Excluir Aluno
+            </button>
+          )}
+        </div>
+      </form>
+
+      <div className="alunos-list">
+        <h3>Lista de Alunos</h3>
+        {alunos.length === 0 ? (
+          <p>Nenhum aluno cadastrado.</p>
+        ) : (
+          <div className="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Plano</th>
+                  <th>E-mail</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {alunos.map(aluno => (
+                  <tr key={aluno.id} onClick={() => handleSelectAluno(aluno)}>
+                    <td>{aluno.nome}</td>
+                    <td>{aluno.plano ? aluno.plano.nome : 'Sem plano'}</td>
+                    <td>{aluno.email}</td>
+                    <td>{aluno.codStatus ? "Ativo" : "Inativo"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Aluno;
