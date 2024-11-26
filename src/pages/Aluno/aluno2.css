@@ -2,11 +2,17 @@
     max-width: 800px; /* Largura máxima do contêiner */
     margin: 0 auto; /* Centraliza o contêiner na página */
     padding: 20px; /* Espaçamento interno do contêiner */
-    background-color: #150707; /* Cor de fundo clara */
+    background-color: #0c0505; /* Cor de fundo clara */
     border-radius: 8px; /* Bordas arredondadas */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border-color: #0056b3;
 }
 
+.app-container h2 {
+    text-align: center; /* Centraliza o título */
+  margin-bottom: 20px; /* Espaçamento inferior do título */
+  color: #e9dcdc; /* Cor do texto do título */
+}
 /* Estilo para o grupo de formulário */
 .form-container {
     margin-bottom: 20px; /* Espaçamento inferior */
@@ -18,13 +24,23 @@
 
 .form-group input[type="text"],
 .form-group input[type="email"],
-.form-group input[type="password"] {
+.form-group input[type="password"],
+.form-group input[type="text"].cpf-input,
+.form-group select.input-field {
     width: 100%; /* Largura total do campo de entrada */
-    padding: 10px; /* Espaçamento interno do campo */
+    padding: 12px; /* Espaçamento interno do campo */
     border: 1px solid #ccc; /* Borda sólida com cor cinza */
     border-radius: 4px; /* Borda arredondada */
+    box-sizing: border-box; /* Inclui padding e bordas na largura total */
 }
 
+.input-field {
+    width: 100%; /* Largura total do campo de entrada */
+    padding: 12px; /* Espaçamento interno do campo */
+    border: 1px solid #ccc; /* Borda sólida com cor cinza */
+    border-radius: 4px; /* Borda arredondada */
+    box-sizing: border-box; /* Inclui padding e bordas na largura total */
+}
 /* Estilo para o botão de envio */
 .form-group button {
     width: 48%; /* Largura do botão */
@@ -77,6 +93,7 @@ tr:hover {
 }
 
 h3 {
+    padding: 1%;
     margin-bottom: 10px; /* Espaçamento inferior do título */
-    color: #f5f0f0
+    background-color: rgb(72, 27, 100);
 }

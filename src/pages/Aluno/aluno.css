@@ -17,14 +17,15 @@
   
   /* Estilo para os campos de entrada de texto */
   .form-group input[type="text"],
-  .form-group input[type="email"],
-  .form-group input[type="password"] {
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="text"].cpf-input,
+.form-group select.input-field { /* Adicionando o select à regra */
     width: 100%; /* Largura total do campo de entrada */
-    margin-bottom: 10px; /* Espaçamento inferior */
-    padding: 10px; /* Espaçamento interno do campo */
+    padding: 12px; /* Espaçamento interno do campo */
     border: 1px solid #ccc; /* Borda sólida com cor cinza */
     border-radius: 4px; /* Borda arredondada */
-  }
+}
   
   /* Estilo para o botão de envio */
   .form-group button {

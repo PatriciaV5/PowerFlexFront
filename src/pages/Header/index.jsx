@@ -14,6 +14,8 @@ function Header() {
                     <span className="separator">|</span>
                     <Link to="/agenda" className="nav-item">Agenda</Link>
                     <span className="separator">|</span>
+                    <Link to="/aluno" className="nav-item">Aluno</Link>
+                    <span className="separator">|</span>
                     <Link to="/login" className="nav-item">Login</Link>
                 </nav>
             </header>

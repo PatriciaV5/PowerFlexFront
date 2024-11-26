@@ -605,6 +605,7 @@ import './aluno2.css';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import InputMask from 'react-input-mask'; // Importa a biblioteca de máscara
 
 const Aluno = () => {
   const navigate = useNavigate();
@@ -617,7 +618,6 @@ const Aluno = () => {
   const [vplano, setPlano] = useState('');
   const [planos, setPlanos] = useState([]); 
 
-
   const { handleSubmit } = useForm();
 
   useEffect(() => {
@@ -626,49 +626,51 @@ const Aluno = () => {
       navigate('/');
     }
 
-    const fetchAlunos = async () => {
-      const token = localStorage.getItem('token');
-      console.log("Token enviado na requisição:", token); // Log do token enviado
-      try {
-        const response = await api.get("/api/alunos", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setAlunos(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar alunos:", error);
-      }
-    };
-    const fetchPlanos = async () => { 
-      const token = localStorage.getItem('token');
-      try {
-        const response = await api.get("/api/planos", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setPlanos(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar planos:", error);
-      }
-    };
-
-
     fetchAlunos();
     fetchPlanos(); 
 
   }, [navigate]);
+
+  const fetchAlunos = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await api.get("/api/alunos", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setAlunos(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar alunos:", error);
+    }
+  };
+
+  const fetchPlanos = async () => { 
+    const token = localStorage.getItem('token');
+    try {
+      const response = await api.get("/api/planos", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setPlanos(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar planos:", error);
+    }
+  };
 
   const validateForm = () => {
     if (!vnome || !vcpf || !vemail || !vsenha || !vplano) {
       alert("Por favor, preencha todos os campos!");
       return false;
     }
-    if (vcpf.length !== 11) {
+
+    const cpfNumeros = vcpf.replace(/\D/g, ''); // Remove não dígitos
+    if (cpfNumeros.length !== 11) {
       alert("O CPF deve ter exatamente 11 dígitos.");
       return false;
     }
+  
     if (!vemail.includes('@')) {
       alert("O e-mail deve conter o caractere '@'.");
       return false;
@@ -720,7 +722,6 @@ const Aluno = () => {
       setPlano('');
       fetchAlunos(); // Recarrega a lista de alunos
     } catch (error) {
-      console.log()
       alert('Erro ao cadastrar/atualizar: ' + (error.response?.data.message || 'Erro desconhecido'));
     }
   };
@@ -735,7 +736,7 @@ const Aluno = () => {
   };
 
   const handleDelete = async (id) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(' token');
     try {
       await api.delete(`/api/alunos/excluir/${id}`, {
         headers: {
@@ -743,6 +744,7 @@ const Aluno = () => {
         }
       });
       alert('Aluno excluído com sucesso!');
+      fetchAlunos(); // Recarrega a lista de alunos após exclusão
     } catch (error) {
       alert('Erro ao excluir aluno: ' + (error.response?.data.message || 'Erro desconhecido'));
     }
@@ -750,60 +752,68 @@ const Aluno = () => {
 
   return (
     <div className="app-container">
-      <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-        <div className="form-group">
-          <label>Nome Completo</label>
-          <input type="text"
-          placeholder="Informe o Nome Completo" 
-          value={vnome} 
-          onChange={(e) => setNome(e.target.value)} 
-        />
-        </div>
+      <h2>Cadastrar Aluno</h2>
+  <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+    <div className="form-group">
+      <label>Nome Completo</label>
+      <input 
+        type="text"
+        placeholder="Informe o Nome Completo" 
+        value={vnome} 
+        onChange={(e) => setNome(e.target.value)} 
+      />
+    </div>
 
-        <div className="form-group">
-          <label>CPF</label>
-          <input 
-            type="text" 
-            placeholder="Informe o CPF (11 dígitos)" 
-            value={vcpf} 
-            onChange={(e) => setCPF(e.target.value)} 
-          />
-        </div>
+    <div className="form-group">
+      <label htmlFor="cpf">CPF</label>
+      <InputMask
+        id="cpf"
+        mask="999.999.999-99"
+        placeholder="Informe o CPF" 
+        value={vcpf}
+        onChange={(e) => setCPF(e.target.value)}
+        required
+        className="input-field" // Adicionando classe para estilização
+      />
+    </div>
 
-        <div className="form-group">
-          <label>E-mail</label>
-          <input 
-            type="email" 
-            placeholder="Informe o E-mail" 
-            value={vemail} 
-            onChange={(e) => setEmail(e.target.value)} 
-          />
-        </div>
+    <div className="form-group">
+      <label>E-mail</label>
+      <input 
+        type="email" 
+        placeholder="Informe o E-mail" 
+        value={vemail} 
+        onChange={(e) => setEmail(e.target.value)} 
+      />
+    </div>
 
-        <div className="form-group">
-          <label>Senha</label>
-          <input 
-            type="password" 
-            placeholder="Informe a sua Senha" 
-            value={vsenha} 
-            onChange={(e) => setSenha(e.target.value)} 
-          />
-        </div>
+    <div className="form-group">
+      <label>Senha</label>
+      <input 
+        type="password" 
+        placeholder="Informe a sua Senha" 
+        value={vsenha} 
+        onChange={(e) => setSenha(e.target.value)} 
+      />
+    </div>
 
-        <div className="form-group">
-          <label htmlFor="plano">Plano</label>
-          <select value={vplano} onChange={(e) => setPlano(e.target.value)}>
-            <option value="">Selecione um plano</option>
-            {planos.length > 0 ? (
-              planos.map(plano => (
-                <option key={plano.id} value={plano.id}>{plano.nome}</option>
-              ))
-            ) : (
-              <option value="" disabled>Carregando planos...</option>
-            )}
-          </select>
-        </div>
-
+    <div className="form-group">
+      <label htmlFor="plano">Plano</label>
+      <select 
+        value={vplano} 
+        onChange={(e) => setPlano(e.target.value)} 
+        className="input-field" // Adicionando classe para estilização
+      >
+        <option value="">Selecione um plano</option>
+        {planos.length > 0 ? (
+          planos.map(plano => (
+            <option key={plano.id} value={plano.id}>{plano.nome}</option>
+          ))
+        ) : (
+          <option value="" disabled>Carregando planos...</option>
+        )}
+      </select>
+    </div>
 
         <div className="form-group">
           <button type="submit">{selectedAluno ? "Atualizar Aluno" : "Cadastrar Aluno"}</button>
