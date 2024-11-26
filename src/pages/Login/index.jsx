@@ -324,38 +324,31 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      if (!data.login || !data.password) {
-        alert("Por favor, preencha todos os campos!");
-        return;
-      }
-      // Fazendo a requisição para o backend com os dados do usuário
-      const response = await api.post("/api/login", {
-        login: data.login,
-        senha: data.password
-      });
+        if (!data.login || !data.password) {
+            alert("Por favor, preencha todos os campos!");
+            return;
+        }
 
-      console.log(response);
+        const response = await api.post("/api/login", {
+            login: data.login,
+            senha: data.password
+        });
 
-      const token = response.data; // Alterado para capturar o token corretamente
-      // Armazena o token no localStorage
-      localStorage.setItem('token', token);
+        const { token, nome } = response.data; // Desestrutura o token e o nome da resposta
+        localStorage.setItem('token', token);
+        localStorage.setItem('adminName', nome); // Armazena o nome do administrador
 
-      // Verifica se a resposta é bem-sucedida (código HTTP 200)
-      if (response.status === 200) {
-        alert("Login bem-sucedido!");
-        
-        
-
-        // Redireciona o usuário para a página principal ou dashboard
-        navigate("/aluno");// Exemplo
-      } else {
-        alert("Credenciais inválidas! Por favor, tente novamente.");
-      }
+        if (response.status === 200) {
+            alert("Login bem-sucedido!");
+            navigate("/aluno"); // Redireciona para a página de aluno
+        } else {
+            alert("Credenciais inválidas! Por favor, tente novamente.");
+        }
     } catch (error) {
-      console.error("Erro ao realizar login:", error);
-      alert("Ocorreu um erro ao tentar realizar o login. Tente novamente mais tarde.");
+        console.error("Erro ao realizar login:", error);
+        alert("Ocorreu um erro ao tentar realizar o login. Tente novamente mais tarde.");
     }
-  };
+};
 
   return (
     <div className="logingeral">

@@ -40,3 +40,52 @@ header {
 .separator {
     color: #000;
 }
+
+.admin-menu {
+    position: relative; /* Necessário para o posicionamento do dropdown */
+    display: flex;
+    align-items: center;
+}
+
+.admin-icon {
+    cursor: pointer;
+}
+
+.admin-badge {
+    width: 30px;
+    height: 30px;
+    background-color: #007bff; /* Cor da bolinha */
+    border-radius: 50%; /* Forma circular */
+    display: inline-block;
+}
+
+.dropdown-menu {
+    position: absolute; /* Permite que o menu seja posicionado em relação à bolinha */
+    top: 40px; /* Ajuste conforme necessário */
+    right: 0; /* Alinha à direita da bolinha */
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1;
+    min-width: 150px; /* Largura mínima do menu */
+}
+
+.dropdown-menu span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.dropdown-menu button {
+    background-color: #dc3545; /* Cor do botão de logout */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    width: 100%; /* Botão ocupa toda a largura do menu */
+}
+
+.dropdown-menu button:hover {
+    background-color: #c82333; /* Cor do botão ao passar o mouse */
+}
